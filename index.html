@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sau Cánh Cửa Gia Đình - Interactive Game</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .card-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .animate-bounce-short {
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-3%); }
+            50% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4 md:p-6">
+
+    <div class="w-full max-w-3xl bg-white rounded-3xl card-shadow overflow-hidden border border-slate-100 my-auto">
+        
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white p-6 md:p-8 text-center relative">
+            <div class="inline-block bg-indigo-500/30 text-indigo-200 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full mb-3 border border-indigo-400/30">
+                Môn học: Thân tộc, Hôn nhân & Gia đình ở Việt Nam
+            </div>
+            <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-amber-300">
+                SAU CÁNH CỬA GIA ĐÌNH
+            </h1>
+            <p class="text-indigo-200 text-sm mt-2 max-w-xl mx-auto font-light">
+                Trò chơi tương tác tìm hiểu về bạo lực gia đình, cấu trúc thân tộc và các điều kiện kinh tế - xã hội tác động đến vị thế người phụ nữ.
+            </p>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="p-6 md:p-8">
+
+            <!-- Welcome Screen -->
+            <div id="start-screen" class="text-center py-6">
+                <div class="w-24 h-24 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-inner">
+                    <i class="fa-solid fa-house-chimney-user"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 mb-3">Sẵn sàng khám phá?</h2>
+                <p class="text-slate-600 mb-8 max-w-md mx-auto text-sm leading-relaxed">
+        
+                </p>
+                <button onclick="startGame()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-8 rounded-2xl shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 text-lg flex items-center justify-center mx-auto gap-3">
+                    <span>Bắt đầu ngay</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- Quiz Screen -->
+            <div id="quiz-screen" class="hidden">
+                <!-- Progress Header -->
+                <div class="flex items-center justify-between mb-4">
+                    <span id="question-number" class="text-xs font-bold text-indigo-600 uppercase tracking-wider bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100">
+                        Câu hỏi 1 / 8
+                    </span>
+                    <span id="score-display" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">
+                        Điểm: 0
+                    </span>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-100 rounded-full h-2.5 mb-6 overflow-hidden">
+                    <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style="width: 12.5%"></div>
+                </div>
+
+                <!-- Question Text -->
+                <div class="mb-6 bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-200/80">
+                    <h3 id="question-text" class="text-base md:text-lg font-semibold text-slate-800 leading-relaxed">
+                        Nội dung câu hỏi sẽ hiển thị ở đây...
+                    </h3>
+                </div>
+
+                <!-- Options -->
+                <div id="options-container" class="space-y-3 mb-6">
+                    <!-- Dynamic options will be rendered here -->
+                </div>
+
+                <!-- Explanation Box -->
+                <div id="explanation-box" class="hidden p-4 rounded-2xl mb-6 text-sm border">
+                    <div class="font-bold mb-1 flex items-center gap-2" id="explanation-title">
+                        <i class="fa-solid fa-lightbulb"></i> Giải thích đáp án
+                    </div>
+                    <p id="explanation-text" class="text-slate-700 leading-relaxed"></p>
+                </div>
+
+                <!-- Next Button -->
+                <button id="next-btn" onclick="nextQuestion()" class="hidden w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+                    <span>Câu tiếp theo</span>
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Result Screen -->
+            <div id="result-screen" class="hidden text-center py-6">
+                <div id="result-icon" class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"></div>
+                <h2 class="text-2xl font-extrabold text-slate-800 mb-2">Hoàn thành bài tương tác!</h2>
+                <p id="result-message" class="text-slate-600 mb-6 text-sm"></p>
+                
+                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 mb-8 max-w-sm mx-auto">
+                    <div class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Kết quả của bạn</div>
+                    <div class="text-4xl font-extrabold text-indigo-600" id="final-score">0 / 8</div>
+                    <div id="score-percentage" class="text-xs text-indigo-400 font-medium mt-1">Đạt 0%</div>
+                </div>
+
+                <button onclick="restartGame()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-all duration-200 flex items-center justify-center mx-auto gap-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Thử lại từ đầu</span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 text-center text-xs text-slate-400">
+            Học phần: Thân tộc, Hôn nhân & Gia đình ở Việt Nam &bull; Dự án tương tác
+        </div>
+    </div>
+
+    <!-- JavaScript Game Logic -->
+    <script>
+        const questions = [
+            {
+                question: "1. Một người phụ nữ kể rằng chồng thường xuyên có hành vi bạo lực với mình, nhưng cô vẫn cho rằng đó là chuyện riêng của gia đình và không muốn người ngoài biết. Tình huống này gợi ra vấn đề gì mà tác giả nhấn mạnh?",
+                options: [
+                    "A. Người phụ nữ không nhận thức được ý nghĩa của hôn nhân.",
+                    "B. Quan niệm gia đình là nơi riêng tư, cần giữ gìn sự hòa thuận có thể góp phần duy trì sự im lặng trước bạo lực.",
+                    "C. Bạo lực chỉ xảy ra khi các thành viên trong gia đình không còn yêu thương nhau.",
+                    "D. Người ngoài không nên quan tâm đến những vấn đề xảy ra trong gia đình."
+                ],
+                correct: 1,
+                explanation: "Quan niệm gia đình cần hòa thuận và những suy nghĩ coi bạo lực là chuyện riêng có thể khiến người trong cuộc khó chia sẻ, tìm kiếm sự hỗ trợ hoặc lên tiếng về những gì mình trải qua."
+            },
+            {
+                question: "2. Một người phụ nữ thường xuyên bị chồng đối xử tệ, nhưng cô không có thu nhập ổn định, đang sống trong ngôi nhà thuộc gia đình chồng và lo lắng không biết sẽ sống ở đâu nếu rời đi.\n\n Bên cạnh những khía cạnh trên, yếu tố nào cần được xem xét để hiểu tình huống này?",
+                options: [
+                    "A. Chỉ cần tìm hiểu người phụ nữ có yêu chồng hay không.",
+                    "B. Chỉ cần tìm hiểu người phụ nữ có quan niệm truyền thống về hôn nhân hay không.",
+                    "C. Cần xem xét đồng thời quan hệ vợ chồng, khả năng kinh tế, chỗ ở và mạng lưới thân tộc của người phụ nữ.",
+                    "D. Có thể kết luận người phụ nữ chấp nhận bạo lực vì cô không muốn thay đổi cuộc sống."
+                ],
+                correct: 2,
+                explanation: "Một người phụ nữ ở lại trong cuộc hôn nhân không thể chỉ được giải thích bằng tình yêu hay quan niệm giới. Sự phụ thuộc về kinh tế, tài sản và các mối quan hệ xã hội cũng có thể hạn chế lựa chọn của họ."
+            },
+            {
+                question: "3. Sau khi kết hôn, một người phụ nữ sống cùng gia đình chồng. Gia đình chồng giúp chăm sóc con và hỗ trợ sinh hoạt, nhưng cô cũng thường xuyên bị yêu cầu phải nghe theo quyết định của chồng và bố mẹ chồng.\n\nNhận định nào phù hợp nhất?",
+                options: [
+                    "A. Sống cùng gia đình chồng luôn khiến người phụ nữ bị áp bức.",
+                    "B. Sự hỗ trợ từ gia đình chồng chứng tỏ người phụ nữ có vị thế bình đẳng.",
+                    "C. Quan hệ thân tộc có thể vừa đem lại sự hỗ trợ, vừa tạo ra sự phụ thuộc và áp lực đối với người phụ nữ.",
+                    "D. Những mâu thuẫn này chỉ xuất phát từ tính cách của các thành viên trong gia đình."
+                ],
+                correct: 2,
+                explanation: "Tác giả không xem quan hệ thân tộc chỉ là nguồn lực hỗ trợ hay chỉ là nguồn gây áp lực. Cùng một mạng lưới gia đình có thể giúp đỡ người phụ nữ nhưng cũng có thể hạn chế khả năng tự quyết của họ."
+            },
+            {
+                question: "4. Một cặp vợ chồng sống trong ngôi nhà do bố mẹ chồng sở hữu. Khi xảy ra mâu thuẫn, người chồng cho rằng vợ có thể thu dọn đồ đạc và rời đi, trong khi anh vẫn có quyền ở lại ngôi nhà.\n\nĐiều gì giúp giải thích rõ nhất sự bất bình đẳng trong tình huống này?",
+                options: [
+                    "A. Người chồng có quyền quyết định vì anh là người kiếm được nhiều tiền hơn.",
+                    "B. Quyền sở hữu tài sản, điều kiện cư trú và mạng lưới thân tộc có thể tạo cho người chồng lợi thế mà người vợ không có.",
+                    "C. Mâu thuẫn này là chuyện riêng giữa hai vợ chồng, không liên quan đến cấu trúc gia đình.",
+                    "D. Người vợ chỉ cần thay đổi cách ứng xử thì vấn đề sẽ được giải quyết."
+                ],
+                correct: 1,
+                explanation: "Qua trường hợp của Lý, tác giả cho thấy quyền sở hữu nhà đất, sự gắn bó với địa phương và mạng lưới thân tộc có thể khiến người chồng có vị thế vững chắc hơn, trong khi người vợ khó tìm được nơi ở khác."
+            },
+            {
+                question: "5. Một người phụ nữ muốn chia sẻ việc mình bị chồng bạo hành với họ hàng. Tuy nhiên, một số người khuyên cô nên nhẫn nhịn để giữ gìn gia đình và tránh làm ảnh hưởng đến danh dự của hai bên.\n\nTình huống này cho thấy điều gì?",
+                options: [
+                    "A. Họ hàng luôn là nguồn hỗ trợ đáng tin cậy trong mọi hoàn cảnh.",
+                    "B. Người phụ nữ nên ưu tiên giữ gìn danh dự gia đình hơn nhu cầu an toàn của bản thân.",
+                    "C. Những người thân có thể vừa là nguồn hỗ trợ, vừa góp phần duy trì sự im lặng trước bạo lực.",
+                    "D. Mâu thuẫn trong gia đình chỉ có thể giải quyết bằng cách các thành viên tự thỏa thuận."
+                ],
+                correct: 2,
+                explanation: "Sự hiện diện của họ hàng không đồng nghĩa với việc người phụ nữ luôn được bảo vệ. Các mối quan hệ thân tộc cũng có thể tạo ra áp lực khiến người trong cuộc khó lên tiếng hoặc tìm kiếm sự trợ giúp."
+            },
+            {
+                question: "6. Một nhóm nghiên cứu nhận thấy nhiều người chồng cho rằng đàn ông có quyền quyết định các vấn đề quan trọng trong gia đình. Nhóm kết luận rằng chỉ cần thay đổi quan niệm về vai trò nam và nữ thì bạo lực gia đình sẽ được giải quyết hoàn toàn.\n\n Kết luận này đã phù hợp chưa?",
+                options: [
+                    "A. Kết luận hoàn toàn chính xác vì bạo lực gia đình chỉ bắt nguồn từ định kiến giới.",
+                    "B. Định kiến giới không liên quan đến bạo lực gia đình.",
+                    "C. Định kiến giới là yếu tố quan trọng, nhưng cần xem xét thêm điều kiện kinh tế, quyền sở hữu tài sản và các quan hệ thân tộc.",
+                    "D. Bạo lực gia đình là vấn đề cá nhân nên không cần nghiên cứu các điều kiện xã hội."
+                ],
+                correct: 2,
+                explanation: "Tác giả không phủ nhận vai trò của chuẩn mực giới, nhưng cho rằng chỉ tập trung vào thái độ và quan niệm của nam giới, nữ giới sẽ bỏ qua những điều kiện kinh tế – xã hội khiến phụ nữ rơi vào vị thế dễ bị tổn thương."
+            },
+            {
+                question: "7. Một người phụ nữ chia sẻ rằng chồng có những lúc đối xử tệ với mình, nhưng cũng có lúc dịu dàng, chăm sóc con và chu cấp cho gia đình. Cô vẫn có tình cảm với chồng và không muốn chấm dứt cuộc hôn nhân.\n\nCâu chuyện này cho thấy điều gì?",
+                options: [
+                    "A. Nếu vẫn yêu chồng thì người phụ nữ không thực sự bị tổn thương.",
+                    "B. Tình cảm dành cho chồng chứng tỏ những hành vi bạo lực không nghiêm trọng.",
+                    "C. Tình cảm, sự gắn bó gia đình và những khó khăn về kinh tế – xã hội có thể cùng tồn tại, khiến trải nghiệm của người phụ nữ trở nên phức tạp.",
+                    "D. Người phụ nữ chắc chắn không hiểu được hoàn cảnh của chính mình."
+                ],
+                correct: 2,
+                explanation: "Trường hợp của Thoa cho thấy tình cảm và đau khổ có thể cùng tồn tại trong một mối quan hệ. Cần tìm hiểu trải nghiệm của người phụ nữ trong hoàn cảnh cụ thể, thay vì cho rằng tình yêu đồng nghĩa với việc không có bạo lực hoặc dễ dàng rời bỏ cuộc hôn nhân."
+            },
+            {
+                question: "8. Một địa phương xây dựng chương trình phòng, chống bạo lực gia đình. Chương trình chủ yếu tổ chức tuyên truyền về bình đẳng giới, nhưng chưa chú ý đến việc hỗ trợ chỗ ở, việc làm, thu nhập và các mạng lưới hỗ trợ cho phụ nữ.\n\nNhư vậy, chương trình này cần bổ sung điều gì để có kết quả tốt hơn?",
+                options: [
+                    "A. Tăng cường tuyên truyền về việc giữ gìn gia đình hòa thuận và hạn chế chia sẻ chuyện riêng.",
+                    "B. Tập trung khuyên phụ nữ chủ động giải quyết mâu thuẫn với chồng.",
+                    "C. Chỉ hỗ trợ những phụ nữ đã quyết định rời khỏi cuộc hôn nhân.",
+                    "D. Kết hợp giáo dục về bình đẳng giới với các hỗ trợ thiết thực, đồng thời xem xét những bất bình đẳng về kinh tế, tài sản, chỗ ở và quan hệ thân tộc."
+                ],
+                correct: 3,
+                explanation: "Theo hướng tiếp cận của tác giả, giải pháp không nên chỉ nhắm đến việc thay đổi nhận thức mà còn cần quan tâm đến các điều kiện thực tế giúp phụ nữ có thêm khả năng lựa chọn, tìm kiếm sự hỗ trợ và bảo vệ bản thân."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedOption = null;
+
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('question-number').innerText = `Câu hỏi ${currentQuestion + 1} / ${questions.length}`;
+            document.getElementById('score-display').innerText = `Điểm: ${score}`;
+            document.getElementById('question-text').innerText = q.question;
+
+            // Update Progress Bar
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+
+            // Reset States
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            document.getElementById('explanation-box').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            selectedOption = null;
+
+            // Render Options
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl border-2 border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50 transition-all duration-200 text-slate-700 font-medium text-sm md:text-base flex justify-between items-center group";
+                btn.onclick = () => selectOption(index, btn);
+                btn.innerHTML = `
+                    <span class="pr-2">${opt}</span>
+                    <i class="fa-regular fa-circle text-slate-300 group-hover:text-indigo-500 text-lg flex-shrink-0"></i>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function selectOption(index, btnElement) {
+            if (selectedOption !== null) return; // Prevent changing after selected
+            selectedOption = index;
+
+            const q = questions[currentQuestion];
+            const optionsBtns = document.getElementById('options-container').children;
+
+            if (index === q.correct) {
+                score++;
+                document.getElementById('score-display').innerText = `Điểm: ${score}`;
+                btnElement.className = "w-full text-left p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-medium text-sm md:text-base flex justify-between items-center shadow-sm";
+                btnElement.querySelector('i').className = "fa-solid fa-circle-check text-emerald-600 text-lg flex-shrink-0";
+                
+                showExplanation(true, q.explanation);
+            } else {
+                btnElement.className = "w-full text-left p-4 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-900 font-medium text-sm md:text-base flex justify-between items-center shadow-sm";
+                btnElement.querySelector('i').className = "fa-solid fa-circle-xmark text-rose-600 text-lg flex-shrink-0";
+
+                // Highlight Correct One
+                const correctBtn = optionsBtns[q.correct];
+                correctBtn.className = "w-full text-left p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-medium text-sm md:text-base flex justify-between items-center";
+                correctBtn.querySelector('i').className = "fa-solid fa-circle-check text-emerald-600 text-lg flex-shrink-0";
+
+                showExplanation(false, q.explanation);
+            }
+
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function showExplanation(isCorrect, text) {
+            const expBox = document.getElementById('explanation-box');
+            const expTitle = document.getElementById('explanation-title');
+            const expText = document.getElementById('explanation-text');
+
+            expBox.classList.remove('hidden');
+            if (isCorrect) {
+                expBox.className = "p-4 rounded-2xl mb-6 text-sm border bg-emerald-50 border-emerald-200 text-emerald-900";
+                expTitle.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> Chính xác!`;
+            } else {
+                expBox.className = "p-4 rounded-2xl mb-6 text-sm border bg-amber-50 border-amber-200 text-amber-900";
+                expTitle.innerHTML = `<i class="fa-solid fa-circle-info text-amber-600"></i> Đáp án đúng và giải thích:`;
+            }
+            expText.innerText = text;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            const finalScore = document.getElementById('final-score');
+            const scorePercentage = document.getElementById('score-percentage');
+            const resultIcon = document.getElementById('result-icon');
+            const resultMessage = document.getElementById('result-message');
+
+            const percentage = Math.round((score / questions.length) * 100);
+            finalScore.innerText = `${score} / ${questions.length}`;
+            scorePercentage.innerText = `Đạt ${percentage}%`;
+
+            if (percentage >= 80) {
+                resultIcon.className = "w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl bg-emerald-100 text-emerald-600";
+                resultIcon.innerHTML = `<i class="fa-solid fa-award"></i>`;
+                resultMessage.innerText = "Xuất sắc! Bạn nắm rất vững kiến thức và lập luận xã hội học trong chương học.";
+            } else if (percentage >= 50) {
+                resultIcon.className = "w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl bg-amber-100 text-amber-600";
+                resultIcon.innerHTML = `<i class="fa-solid fa-thumbs-up"></i>`;
+                resultMessage.innerText = "Kinh nghiệm khá tốt! Bạn đã hiểu được các khía cạnh cơ bản của bài học.";
+            } else {
+                resultIcon.className = "w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl bg-rose-100 text-rose-600";
+                resultIcon.innerHTML = `<i class="fa-solid fa-book-open"></i>`;
+                resultMessage.innerText = "Bạn nên đọc lại lý thuyết chương sách để hiểu sâu hơn về cấu trúc thân tộc và giới nhé!";
+            }
+        }
+
+        function restartGame() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            showQuestion();
+        }
+    </script>
+</body>
+</html>
